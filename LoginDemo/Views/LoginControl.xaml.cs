@@ -46,7 +46,6 @@ namespace LoginDemo.Views
                 MessageBox.Show("error: " + ex.Message);
             }
         }
-
     }
 }
 
