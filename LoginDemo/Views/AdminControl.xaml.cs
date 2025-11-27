@@ -73,8 +73,27 @@ namespace LoginDemo.Views
             (Window.GetWindow(this) as MainWindow)?.SwitchToLogin();
         }
 
-        private void UsersGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e) {
+        private void UsersGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            if (e.Row.Item is DataRowView rowView)
+            {
+                int id = Convert.ToInt32(rowView["Id"]);
+                string login = rowView["Login"].ToString();
+                string password = rowView["Password"].ToString();
+                string role = rowView["Role"].ToString();
 
+                using var connection = new SqliteConnection(dbPath);
+                connection.Open();
+                string sql = "UPDATE Users SET Login = $login, Password = $password, Role = $role WHERE Id = $id";
+
+                using var command = new SqliteCommand(sql, connection);
+                command.Parameters.AddWithValue("$login", login);
+                command.Parameters.AddWithValue("$password", password);
+                command.Parameters.AddWithValue("$role", role);
+                command.Parameters.AddWithValue("$id", id);
+
+                command.ExecuteNonQuery();
+            }
         }
     }
 }
