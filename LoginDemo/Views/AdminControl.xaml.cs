@@ -91,7 +91,6 @@ namespace LoginDemo.Views
                 command.Parameters.AddWithValue("$password", password);
                 command.Parameters.AddWithValue("$role", role);
                 command.Parameters.AddWithValue("$id", id);
-
                 command.ExecuteNonQuery();
             }
         }
