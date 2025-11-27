@@ -25,7 +25,8 @@ namespace LoginDemo.Views
         }
 
         private void DeleteUser_Click(object sender, RoutedEventArgs e) {
-            if(sender is Button btn && btn.DataContext is DataRowView row) {
+            using var connection = new SqliteConnection(dbPath);
+            if (sender is Button btn && btn.DataContext is DataRowView row) {
                 string login = row["Login"].ToString();
                 string password = row["Password"].ToString();
                 int id = Convert.ToInt32(row["Id"]);
@@ -37,6 +38,11 @@ namespace LoginDemo.Views
                 if (MessageBox.Show($"удалить пользователя ID={id}?", "удаление",
                     MessageBoxButton.YesNo) != MessageBoxResult.Yes)
                     return;
+                using var command = new SqliteCommand(
+                    "DELETE FROM Users WHERE Id = $id", connection);
+                command.Parameters.AddWithValue("$id", id);
+                command.ExecuteNonQuery();
+                LoadUsers();
             }
         }
 

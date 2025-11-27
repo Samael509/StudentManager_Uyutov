@@ -15,26 +15,38 @@ namespace LoginDemo.Views
             InitializeComponent();
         }
 
-        private void Login_Click(object sender, RoutedEventArgs e) {
-            string login = InputLogin.Text;
-            string password = InputPassword.Password;
-            using var connection = new SqliteConnection(dbPath);
-            connection.Open();
-            using var command = new SqliteCommand("SELECT Role FROM Users WHERE Login = $l AND Password = $p", connection);
-            command.Parameters.AddWithValue("$l", login);
-            command.Parameters.AddWithValue("$p", password);
-            var role = command.ExecuteScalar()?.ToString();
-            if(role == null) {
-                InfoText.Text = "Неверный логин или пароль";
-                return;
+        private void Login_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string login = InputLogin.Text;
+                string password = InputPassword.Password;
+                using var connection = new SqliteConnection(dbPath);
+                connection.Open();
+                using var command = new SqliteCommand("SELECT Role FROM Users WHERE Login = $l AND Password = $p", connection);
+                command.Parameters.AddWithValue("$l", login);
+                command.Parameters.AddWithValue("$p", password);
+                var role = command.ExecuteScalar()?.ToString();
+                if (role == null)
+                {
+                    InfoText.Text = "неверный логин или пароль";
+                    return;
+                }
+                if (role == "Admin")
+                {
+                    (Window.GetWindow(this) as MainWindow)?.SwitchToAdmin();
+                }
+                else
+                {
+                    (Window.GetWindow(this) as MainWindow)?.SwitchToUser();
+                }
             }
-            if(role == "Admin") {
-                (Window.GetWindow(this) as MainWindow)?.SwitchToAdmin();
+            catch (Exception ex)
+            {
+                MessageBox.Show("error: " + ex.Message);
             }
-            else {
-                (Window.GetWindow(this) as MainWindow)?.SwitchToUser();
-            }
-
         }
+
     }
 }
+
