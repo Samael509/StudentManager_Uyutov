@@ -17,7 +17,7 @@
         <Button Content="Удалить выбранное" Width="150" Margin="0,0,0,10" Grid.Row="1"
                 HorizontalAlignment="Left" Background="#F44336" Foreground="White" FontWeight="Bold" Click="Delete_Click"/>
 
-        <DataGrid x:Name="DataGridPeople" Grid.Row="2" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single" >
+        <DataGrid x:Name="DataGridPeople" Grid.Row="2" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single" LoadingRow="DataGrid_LoadingRow">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="Auto"/>
                 <DataGridTextColumn Header="Имя" Binding="{Binding Name}" Width="*"/>

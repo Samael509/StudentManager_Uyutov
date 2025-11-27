@@ -9,7 +9,7 @@ namespace LoginDemo.Views
 {
     public partial class LoginControl : UserControl
     {
-        private string dbPath = @"Data Source=C:\SOFT\DB Uyutov\authdemo.db";
+        private string dbPath = @"Data Source=C:\SOFT\authdemo.db";
         public LoginControl()
         {
             InitializeComponent();

@@ -6,7 +6,7 @@ namespace StudentManager_Uyutov;
 
 public partial class MainWindow : Window {
 
-    private const string ConnectionString = @"Data Source=C:\SOFT\DB Uyutov\students.db";
+    private const string ConnectionString = @"Data Source=C:\SOFT\students.db";
     public MainWindow() {
         InitializeComponent();
         try {
@@ -93,7 +93,8 @@ public partial class MainWindow : Window {
         LoadData();
     }
 
-    private void DataGridPeople_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) {
-
+    private void DataGrid_LoadingRow(object sender, System.Windows.Controls.DataGridRowEventArgs e)
+    {
+        e.Row.Header = (e.Row.GetIndex() + 1).ToString();
     }
 }

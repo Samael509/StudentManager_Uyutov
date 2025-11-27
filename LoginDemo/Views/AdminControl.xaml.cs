@@ -7,7 +7,7 @@ namespace LoginDemo.Views
 {
     public partial class AdminControl : UserControl
     {
-        private string dbPath = @"Data Source=C:\SOFT\DB Uyutov\authdemo.db";
+        private string dbPath = @"Data Source=C:\SOFT\authdemo.db";
         public AdminControl()
         {
             InitializeComponent();
@@ -25,48 +25,63 @@ namespace LoginDemo.Views
         }
 
         private void DeleteUser_Click(object sender, RoutedEventArgs e) {
-            using var connection = new SqliteConnection(dbPath);
-            if (sender is Button btn && btn.DataContext is DataRowView row) {
-                string login = row["Login"].ToString();
-                string password = row["Password"].ToString();
-                int id = Convert.ToInt32(row["Id"]);
+            try
+            {
+                using var connection = new SqliteConnection(dbPath);
+                connection.Open();
+                if (sender is Button btn && btn.DataContext is DataRowView row) {
+                    string login = row["Login"].ToString();
+                    string password = row["Password"].ToString();
+                    int id = Convert.ToInt32(row["Id"]);
 
-                if(login == "admin" && password == "admin") {
-                    MessageBox.Show("гл. админа нельзя удалить");
-                    return;
+                    if(login == "admin" && password == "admin") {
+                        MessageBox.Show("гл. админа нельзя удалить");
+                        return;
+                    }
+                    if (MessageBox.Show($"удалить пользователя ID={id}?", "удаление",
+                        MessageBoxButton.YesNo) != MessageBoxResult.Yes)
+                        return;
+                        using var command = new SqliteCommand(
+                        "DELETE FROM Users WHERE Id = $id", connection);
+                        command.Parameters.AddWithValue("$id", id);
+                        command.ExecuteNonQuery();
+                        LoadUsers();
                 }
-                if (MessageBox.Show($"удалить пользователя ID={id}?", "удаление",
-                    MessageBoxButton.YesNo) != MessageBoxResult.Yes)
-                    return;
-                using var command = new SqliteCommand(
-                    "DELETE FROM Users WHERE Id = $id", connection);
-                command.Parameters.AddWithValue("$id", id);
-                command.ExecuteNonQuery();
-                LoadUsers();
+            
+            } catch(Exception ex)
+            {
+                MessageBox.Show("error:", ex.Message);
             }
         }
 
         private void AddUser_Click(object sender, RoutedEventArgs e) {
-            string login = InputLogin.Text;
-            string password = InputPassword.Text;
-            string role = (InputRole.SelectedItem as ComboBoxItem)?.Content.ToString();
+            try
+            {
+                string login = InputLogin.Text;
+                string password = InputPassword.Text;
+                string role = (InputRole.SelectedItem as ComboBoxItem)?.Content.ToString();
 
-            if(string.IsNullOrWhiteSpace(login)||
-                string.IsNullOrWhiteSpace(password)||
-                string.IsNullOrWhiteSpace(role)) {
-                MessageBox.Show("заполните все поля");
+                if(string.IsNullOrWhiteSpace(login)||
+                    string.IsNullOrWhiteSpace(password)||
+                    string.IsNullOrWhiteSpace(role)) {
+                    MessageBox.Show("заполните все поля");
+                }
+                using var connection = new SqliteConnection(dbPath);
+                connection.Open();
+                using var command = new SqliteCommand("INSERT INTO Users (Login, Password, Role) VALUES ($l, $p, $r)", connection);
+                command.Parameters.AddWithValue("$l", login);
+                command.Parameters.AddWithValue("$p", password);
+                command.Parameters.AddWithValue("$r", role);
+                command.ExecuteNonQuery();
+                InputLogin.Clear();
+                InputPassword.Clear();
+                InputRole.SelectedIndex = -1;
+                LoadUsers();
+            } catch (Exception ex)
+            {
+                MessageBox.Show("error", ex.Message);
             }
-            using var connection = new SqliteConnection(dbPath);
-            connection.Open();
-            using var command = new SqliteCommand("INSERT INTO Users (Login, Password, Role) VALUES ($l, $p, $r", connection);
-            command.Parameters.AddWithValue("$l", login);
-            command.Parameters.AddWithValue("$p", password);
-            command.Parameters.AddWithValue("$r", role);
-            command.ExecuteNonQuery();
-            InputLogin.Clear();
-            InputPassword.Clear();
-            InputRole.SelectedIndex = -1;
-            LoadUsers();
+
         }
 
         private void Button_Click(object sender, RoutedEventArgs e) {
